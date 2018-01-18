@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RazorPagesMovie.Models;
 
@@ -12,38 +9,28 @@ namespace RazorPagesMovie.Pages.Movies
 {
     public class EditModel : PageModel
     {
-        private readonly RazorPagesMovie.Models.MovieContext _context;
+        private readonly MovieContext _context;
 
-        public EditModel(RazorPagesMovie.Models.MovieContext context)
+        public EditModel(MovieContext context)
         {
             _context = context;
         }
 
-        [BindProperty]
-        public Movie Movie { get; set; }
+        [BindProperty] public Movie Movie { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Movie = await _context.Movie.SingleOrDefaultAsync(m => m.ID == id);
 
-            if (Movie == null)
-            {
-                return NotFound();
-            }
+            if (Movie == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             _context.Attach(Movie).State = EntityState.Modified;
 
@@ -54,13 +41,8 @@ namespace RazorPagesMovie.Pages.Movies
             catch (DbUpdateConcurrencyException)
             {
                 if (!MovieExists(Movie.ID))
-                {
                     return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return RedirectToPage("./Index");
